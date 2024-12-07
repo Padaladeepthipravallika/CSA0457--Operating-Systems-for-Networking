@@ -1,0 +1,42 @@
+#include <pthread.h>
+#include <semaphore.h>
+#include <stdio.h>
+
+#define N 5
+
+sem_t chopsticks[N];
+
+void *philosopher(void *num) {
+    int phil = *(int *)num;
+
+    printf("Philosopher %d is thinking.\n", phil);
+    sem_wait(&chopsticks[phil]);
+    sem_wait(&chopsticks[(phil + 1) % N]);
+
+    printf("Philosopher %d is eating.\n", phil);
+    sleep(2);
+
+    sem_post(&chopsticks[(phil + 1) % N]);
+    sem_post(&chopsticks[phil]);
+    printf("Philosopher %d finished eating and is thinking.\n", phil);
+
+    return NULL;
+}
+
+int main() {
+    pthread_t threads[N];
+    int philosophers[N];
+
+    for (int i = 0; i < N; i++) sem_init(&chopsticks[i], 0, 1);
+
+    for (int i = 0; i < N; i++) {
+        philosophers[i] = i;
+        pthread_create(&threads[i], NULL, philosopher, &philosophers[i]);
+    }
+
+    for (int i = 0; i < N; i++) pthread_join(threads[i], NULL);
+
+    for (int i = 0; i < N; i++) sem_destroy(&chopsticks[i]);
+
+    return 0;
+}
