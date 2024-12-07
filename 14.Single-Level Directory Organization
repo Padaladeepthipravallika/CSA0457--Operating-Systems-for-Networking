@@ -1,0 +1,110 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_FILES 100
+#define MAX_NAME_LEN 50
+
+typedef struct {
+    char name[MAX_NAME_LEN];
+    int isOccupied;
+} File;
+
+void addFile(File directory[], int *fileCount);
+void deleteFile(File directory[], int *fileCount);
+void displayFiles(File directory[], int fileCount);
+
+int main() {
+    File directory[MAX_FILES] = {0};
+    int fileCount = 0;
+    int choice;
+
+    do {
+        printf("\nSingle-Level Directory Organization\n");
+        printf("1. Add File\n");
+        printf("2. Delete File\n");
+        printf("3. Display Files\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addFile(directory, &fileCount);
+                break;
+            case 2:
+                deleteFile(directory, &fileCount);
+                break;
+            case 3:
+                displayFiles(directory, fileCount);
+                break;
+            case 4:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 4);
+
+    return 0;
+}
+
+void addFile(File directory[], int *fileCount) {
+    if (*fileCount >= MAX_FILES) {
+        printf("Directory is full. Cannot add more files.\n");
+        return;
+    }
+
+    char fileName[MAX_NAME_LEN];
+    printf("Enter the name of the file to add: ");
+    scanf("%s", fileName);
+
+    // Check for duplicate file names
+    for (int i = 0; i < *fileCount; i++) {
+        if (directory[i].isOccupied && strcmp(directory[i].name, fileName) == 0) {
+            printf("File already exists. Cannot add duplicate file names.\n");
+            return;
+        }
+    }
+
+    // Add file
+    strcpy(directory[*fileCount].name, fileName);
+    directory[*fileCount].isOccupied = 1;
+    (*fileCount)++;
+
+    printf("File '%s' added successfully.\n", fileName);
+}
+
+void deleteFile(File directory[], int *fileCount) {
+    if (*fileCount == 0) {
+        printf("Directory is empty. No files to delete.\n");
+        return;
+    }
+
+    char fileName[MAX_NAME_LEN];
+    printf("Enter the name of the file to delete: ");
+    scanf("%s", fileName);
+
+    for (int i = 0; i < *fileCount; i++) {
+        if (directory[i].isOccupied && strcmp(directory[i].name, fileName) == 0) {
+            directory[i].isOccupied = 0; // Mark the file slot as free
+            printf("File '%s' deleted successfully.\n", fileName);
+            return;
+        }
+    }
+
+    printf("File not found. Cannot delete.\n");
+}
+
+void displayFiles(File directory[], int fileCount) {
+    if (fileCount == 0) {
+        printf("Directory is empty. No files to display.\n");
+        return;
+    }
+
+    printf("Files in the directory:\n");
+    for (int i = 0; i < fileCount; i++) {
+        if (directory[i].isOccupied) {
+            printf("%d. %s\n", i + 1, directory[i].name);
+        }
+    }
+}
