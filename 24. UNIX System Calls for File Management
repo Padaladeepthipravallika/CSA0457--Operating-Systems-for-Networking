@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+int main() {
+    int fd = open("file.txt", O_CREAT | O_WRONLY, 0644);
+    if (fd < 0) {
+        perror("Failed to open file");
+        return 1;
+    }
+
+    write(fd, "Hello, world!\n", 14);
+    close(fd);
+
+    fd = open("file.txt", O_RDONLY);
+    if (fd < 0) {
+        perror("Failed to open file");
+        return 1;
+    }
+
+    char buffer[256];
+    int bytes = read(fd, buffer, sizeof(buffer) - 1);
+    if (bytes > 0) {
+        buffer[bytes] = '\0';
+        printf("File contents:\n%s", buffer);
+    }
+    close(fd);
+
+    return 0;
+}
