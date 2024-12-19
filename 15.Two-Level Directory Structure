@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <string.h>
+
+struct SubDirectory {
+    char name[20];
+    char files[10][20];
+    int file_count;
+};
+
+struct Directory {
+    char name[20];
+    struct SubDirectory subdirs[10];
+    int subdir_count;
+};
+
+int main() {
+    struct Directory dir;
+    dir.subdir_count = 0;
+
+    printf("Enter main directory name: ");
+    scanf("%s", dir.name);
+
+    int choice;
+    do {
+        printf("\n1. Create Subdirectory\n2. Create File\n3. Display\n4. Exit\nEnter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: {
+                printf("Enter subdirectory name: ");
+                scanf("%s", dir.subdirs[dir.subdir_count].name);
+                dir.subdirs[dir.subdir_count].file_count = 0;
+                dir.subdir_count++;
+                break;
+            }
+            case 2: {
+                printf("Enter subdirectory name to add file: ");
+                char subdir_name[20];
+                scanf("%s", subdir_name);
+
+                for (int i = 0; i < dir.subdir_count; i++) {
+                    if (strcmp(dir.subdirs[i].name, subdir_name) == 0) {
+                        printf("Enter file name: ");
+                        scanf("%s", dir.subdirs[i].files[dir.subdirs[i].file_count]);
+                        dir.subdirs[i].file_count++;
+                        break;
+                    }
+                }
+                break;
+            }
+            case 3: {
+                printf("\nDirectory: %s\n", dir.name);
+                for (int i = 0; i < dir.subdir_count; i++) {
+                    printf("  Subdirectory: %s\n", dir.subdirs[i].name);
+                    for (int j = 0; j < dir.subdirs[i].file_count; j++) {
+                        printf("    File: %s\n", dir.subdirs[i].files[j]);
+                    }
+                }
+                break;
+            }
+        }
+    } while (choice != 4);
+
+    return 0;
+}
