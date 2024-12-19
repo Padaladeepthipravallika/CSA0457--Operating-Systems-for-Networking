@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Employee {
+    int id;
+    char name[30];
+    float salary;
+};
+
+void addEmployee(FILE *file) {
+    struct Employee emp;
+    printf("Enter Employee ID, Name, and Salary: ");
+    scanf("%d %s %f", &emp.id, emp.name, &emp.salary);
+    fwrite(&emp, sizeof(struct Employee), 1, file);
+}
+
+void viewEmployee(FILE *file, int id) {
+    struct Employee emp;
+    rewind(file);
+    while (fread(&emp, sizeof(struct Employee), 1, file)) {
+        if (emp.id == id) {
+            printf("ID: %d, Name: %s, Salary: %.2f\n", emp.id, emp.name, emp.salary);
+            return;
+        }
+    }
+    printf("Employee not found.\n");
+}
+
+int main() {
+    FILE *file = fopen("employee.dat", "wb+");
+    if (!file) {
+        perror("File opening failed");
+        return EXIT_FAILURE;
+    }
+
+    int choice, id;
+    do {
+        printf("\n1. Add Employee\n2. View Employee by ID\n3. Exit\nEnter choice: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1:
+                addEmployee(file);
+                break;
+            case 2:
+                printf("Enter Employee ID to search: ");
+                scanf("%d", &id);
+                viewEmployee(file, id);
+                break;
+        }
+    } while (choice != 3);
+
+    fclose(file);
+    return 0;
+}
